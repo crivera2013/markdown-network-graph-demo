@@ -1,0 +1,194 @@
+{
+  "nodes": [
+    {
+      "id": "docs/intro.mdx",
+      "title": "Tutorial Intro",
+      "path": "/docs/intro",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-extras/translate-your-site.mdx",
+      "title": "Translate your site",
+      "path": "/docs/tutorial-extras/translate-your-site",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-extras/manage-docs-versions.mdx",
+      "title": "Manage Docs Versions",
+      "path": "/docs/tutorial-extras/manage-docs-versions",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-basics/markdown-features.mdx",
+      "title": "Markdown Features",
+      "path": "/docs/tutorial-basics/markdown-features",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-basics/deploy-your-site.mdx",
+      "title": "Deploy your site",
+      "path": "/docs/tutorial-basics/deploy-your-site",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-basics/create-a-page.mdx",
+      "title": "Create a Page",
+      "path": "/docs/tutorial-basics/create-a-page",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-basics/create-a-document.mdx",
+      "title": "Create a Document",
+      "path": "/docs/tutorial-basics/create-a-document",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-basics/create-a-blog-post.mdx",
+      "title": "Create a Blog Post",
+      "path": "/docs/tutorial-basics/create-a-blog-post",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/tutorial-basics/congratulations.mdx",
+      "title": "Congratulations!",
+      "path": "/docs/tutorial-basics/congratulations",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    }
+  ],
+  "links": [
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-extras/translate-your-site.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-extras/translate-your-site.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-basics/markdown-features.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-basics/markdown-features.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-basics/markdown-features.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-basics/markdown-features.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-basics/markdown-features.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/intro.mdx",
+      "target": "docs/tutorial-basics/markdown-features.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/tutorial-extras/translate-your-site.mdx",
+      "target": "docs/tutorial-extras/manage-docs-versions.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "target": "docs/tutorial-basics/deploy-your-site.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "target": "docs/tutorial-basics/create-a-page.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "target": "docs/tutorial-basics/create-a-document.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "target": "docs/tutorial-basics/create-a-blog-post.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "target": "docs/tutorial-basics/congratulations.mdx",
+      "type": "parent-child",
+      "strength": 0.8
+    },
+    {
+      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "target": "docs/tutorial-basics/create-a-page.mdx",
+      "type": "reference",
+      "strength": 0.5
+    },
+    {
+      "source": "docs/tutorial-basics/congratulations.mdx",
+      "target": "docs/tutorial-extras/manage-docs-versions.mdx",
+      "type": "reference",
+      "strength": 0.5
+    },
+    {
+      "source": "docs/tutorial-basics/congratulations.mdx",
+      "target": "docs/tutorial-extras/translate-your-site.mdx",
+      "type": "reference",
+      "strength": 0.5
+    }
+  ],
+  "metadata": {
+    "generatedAt": "2025-07-07T11:20:32.794Z",
+    "totalNodes": 9,
+    "totalLinks": 17
+  }
+}

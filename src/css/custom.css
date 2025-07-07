@@ -1,0 +1,130 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #2e8555;
+  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary-darker: #277148;
+  --ifm-color-primary-darkest: #205d3b;
+  --ifm-color-primary-light: #33925d;
+  --ifm-color-primary-lighter: #359962;
+  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #25c2a0;
+  --ifm-color-primary-dark: #21af90;
+  --ifm-color-primary-darker: #1fa588;
+  --ifm-color-primary-darkest: #1a8870;
+  --ifm-color-primary-light: #29d5b0;
+  --ifm-color-primary-lighter: #32d8b4;
+  --ifm-color-primary-lightest: #4fddbf;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Custom styles for network graph in sidebar */
+.network-graph-sidebar {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 0.5rem;
+  background-color: var(--ifm-background-surface-color);
+  box-shadow: var(--ifm-global-shadow-lw);
+}
+
+.network-graph-sidebar h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-800);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.network-graph-sidebar .network-graph-tooltip {
+  font-size: 0.75rem;
+  max-width: 200px;
+}
+
+/* Network graph empty state for sidebar */
+.network-graph-sidebar .network-graph-empty {
+  text-align: center;
+  padding: 1rem 0.5rem;
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.network-graph-sidebar .network-graph-loading {
+  text-align: center;
+  padding: 1rem 0.5rem;
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.75rem;
+}
+
+/* Responsive adjustments for smaller TOC area */
+@media (max-width: 1440px) {
+  .network-graph-sidebar {
+    padding: 0.75rem;
+  }
+  
+  .network-graph-sidebar h4 {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .network-graph-sidebar {
+  border-color: var(--ifm-color-emphasis-300);
+  background-color: var(--ifm-background-surface-color);
+}
+
+/* Network graph labels optimization for sidebar */
+.network-graph-sidebar svg text {
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+[data-theme='dark'] .network-graph-sidebar svg text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Improve label positioning and spacing in compact view */
+.network-graph-sidebar svg .node text {
+  dominant-baseline: central;
+}
+
+/* Make sure labels don't overflow the sidebar */
+.network-graph-sidebar {
+  overflow: hidden;
+}
+
+/* Reduce left sidebar width */
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container {
+    flex: 0 0 200px !important;
+    min-width: 200px !important;
+  }
+  
+  .theme-doc-sidebar-menu {
+    width: 200px !important;
+  }
+}
+
+/* Adjust main content area to account for narrower sidebar */
+@media (min-width: 997px) {
+  .main-wrapper {
+    max-width: none !important;
+  }
+  
+  .container {
+    max-width: none !important;
+  }
+}
