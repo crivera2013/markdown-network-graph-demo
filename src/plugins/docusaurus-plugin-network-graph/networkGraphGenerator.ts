@@ -108,8 +108,21 @@ async function createNodeFromFile(
   // Create URL path
   let urlPath = filePath
     .replace(/\.(md|mdx)$/, '')
-    .replace(/\/index$/, '')
-    .replace(/^src\/pages/, '');
+    .replace(/\/index$/, '');
+
+  // Handle case where file name matches folder name (e.g., Trading/Trading.mdx -> Trading/)
+  const pathParts = urlPath.split('/');
+  if (pathParts.length >= 2) {
+    const folderName = pathParts[pathParts.length - 2];
+    const fileName = pathParts[pathParts.length - 1];
+    if (folderName === fileName) {
+      // Remove the duplicate file name, keep just the folder path
+      pathParts.pop();
+      urlPath = pathParts.join('/');
+    }
+  }
+
+  urlPath = urlPath.replace(/^src\/pages/, '');
 
   if (type === 'doc') {
     urlPath = `/docs/${urlPath.replace(/^docs\//, '')}`;
@@ -139,39 +152,74 @@ function generateParentChildLinks(
   links: NetworkLink[],
   maxDepth: number
 ): void {
-  // Create a hierarchy based on file paths
-  const pathHierarchy = new Map<string, string[]>();
-
+  // Create parent-child relationships based on directory structure
+  
   nodes.forEach(node => {
     const pathParts = node.id.split('/');
-    for (let i = 1; i < pathParts.length && i <= maxDepth; i++) {
-      const parentPath = pathParts.slice(0, i).join('/');
-      const childPath = pathParts.slice(0, i + 1).join('/');
-
-      if (parentPath !== childPath) {
-        if (!pathHierarchy.has(parentPath)) {
-          pathHierarchy.set(parentPath, []);
-        }
-        pathHierarchy.get(parentPath)!.push(childPath);
-      }
-    }
-  });
-
-  // Create parent-child links
-  pathHierarchy.forEach((children, parent) => {
-    const parentNode = nodes.find(n => n.id.startsWith(parent));
-    if (parentNode) {
-      children.forEach(childPath => {
-        const childNode = nodes.find(n => n.id === childPath || n.id.startsWith(childPath));
-        if (childNode && childNode.id !== parentNode.id) {
+    
+    if (pathParts.length > 1) {
+      const directory = pathParts.slice(0, -1).join('/'); // Get the directory path
+      const filename = pathParts[pathParts.length - 1]; // Get the filename
+      
+      // Case 1: Look for a file in the same directory that matches the directory name
+      // e.g., tutorial-basics/tutorial-basics.mdx should be parent of tutorial-basics/create-a-page.mdx
+      const directoryName = pathParts[pathParts.length - 2]; // Get the immediate parent directory name
+      const potentialParentInSameDir = `${directory}/${directoryName}.mdx`;
+      
+      const parentInSameDir = nodes.find(n => n.id === potentialParentInSameDir && n.id !== node.id);
+      
+      if (parentInSameDir) {
+        // Check if this link already exists
+        const existingLink = links.find(l => 
+          (l.source === parentInSameDir.id && l.target === node.id) ||
+          (l.source === node.id && l.target === parentInSameDir.id)
+        );
+        
+        if (!existingLink) {
           links.push({
-            source: parentNode.id,
-            target: childNode.id,
+            source: parentInSameDir.id,
+            target: node.id,
             type: 'parent-child',
             strength: 0.8,
           });
         }
-      });
+      }
+      
+      // Case 2: Look for files in parent directories (hierarchical structure)
+      // e.g., docs/intro.mdx could be parent of docs/tutorial-basics/create-a-page.mdx
+      if (pathParts.length > 2) {
+        const parentDirectory = pathParts.slice(0, -2).join('/'); // Go up one directory level
+        const parentDirName = pathParts[pathParts.length - 3]; // Get the parent directory name
+        
+        // Look for index files or files matching the parent directory name
+        const potentialParents = [
+          `${parentDirectory}/${parentDirName}.mdx`,
+          `${parentDirectory}/index.mdx`,
+          `${parentDirectory}/README.mdx`
+        ];
+        
+        for (const potentialParent of potentialParents) {
+          const hierarchicalParent = nodes.find(n => n.id === potentialParent && n.id !== node.id);
+          
+          if (hierarchicalParent) {
+            // Check if this link already exists
+            const existingLink = links.find(l => 
+              (l.source === hierarchicalParent.id && l.target === node.id) ||
+              (l.source === node.id && l.target === hierarchicalParent.id)
+            );
+            
+            if (!existingLink) {
+              links.push({
+                source: hierarchicalParent.id,
+                target: node.id,
+                type: 'parent-child',
+                strength: 0.6, // Slightly weaker strength for hierarchical relationships
+              });
+              break; // Only create one hierarchical parent link
+            }
+          }
+        }
+      }
     }
   });
 }

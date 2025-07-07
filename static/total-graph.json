@@ -1,27 +1,9 @@
 {
   "nodes": [
     {
-      "id": "docs/intro.mdx",
-      "title": "Tutorial Intro",
-      "path": "/docs/intro",
-      "type": "doc",
-      "metadata": {
-        "tags": []
-      }
-    },
-    {
-      "id": "docs/tutorial-extras/translate-your-site.mdx",
-      "title": "Translate your site",
-      "path": "/docs/tutorial-extras/translate-your-site",
-      "type": "doc",
-      "metadata": {
-        "tags": []
-      }
-    },
-    {
-      "id": "docs/tutorial-extras/manage-docs-versions.mdx",
-      "title": "Manage Docs Versions",
-      "path": "/docs/tutorial-extras/manage-docs-versions",
+      "id": "docs/tutorial-basics/tutorial-basics.mdx",
+      "title": "tutorial-basics",
+      "path": "/docs/tutorial-basics",
       "type": "doc",
       "metadata": {
         "tags": []
@@ -80,92 +62,191 @@
       "metadata": {
         "tags": []
       }
+    },
+    {
+      "id": "docs/Trading/Trading.mdx",
+      "title": "Trading",
+      "path": "/docs/Trading",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Portfolio Management/Portfolio Management.mdx",
+      "title": "Portfolio Management",
+      "path": "/docs/Portfolio Management",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Insights/Insights.mdx",
+      "title": "Insights",
+      "path": "/docs/Insights",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Trading/Trade Execution/Trade Execution.mdx",
+      "title": "Trade Execution",
+      "path": "/docs/Trading/Trade Execution",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Trading/Investment Ops/Investment Ops.mdx",
+      "title": "Investment Ops",
+      "path": "/docs/Trading/Investment Ops",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Trading/ETFs/ETFs.mdx",
+      "title": "ETFs",
+      "path": "/docs/Trading/ETFs",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Portfolio Management/Portfolio Strategy/Portfolio Strategy.mdx",
+      "title": "Portfolio Strategy",
+      "path": "/docs/Portfolio Management/Portfolio Strategy",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Portfolio Management/Portfolio Construction/Portfolio Construction.mdx",
+      "title": "Portfolio Construction",
+      "path": "/docs/Portfolio Management/Portfolio Construction",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Portfolio Management/Portfolio Assessment/Portfolio Assessment.mdx",
+      "title": "Portfolio Assessment",
+      "path": "/docs/Portfolio Management/Portfolio Assessment",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Insights/Process Results/Process Results.mdx",
+      "title": "Process Results",
+      "path": "/docs/Insights/Process Results",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
+    },
+    {
+      "id": "docs/Insights/Generate Signals/Generate Signals.mdx",
+      "title": "Generate Signals",
+      "path": "/docs/Insights/Generate Signals",
+      "type": "doc",
+      "metadata": {
+        "tags": []
+      }
     }
   ],
   "links": [
     {
-      "source": "docs/intro.mdx",
-      "target": "docs/tutorial-extras/translate-your-site.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/intro.mdx",
-      "target": "docs/tutorial-extras/translate-your-site.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/intro.mdx",
+      "source": "docs/tutorial-basics/tutorial-basics.mdx",
       "target": "docs/tutorial-basics/markdown-features.mdx",
       "type": "parent-child",
       "strength": 0.8
     },
     {
-      "source": "docs/intro.mdx",
-      "target": "docs/tutorial-basics/markdown-features.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/intro.mdx",
-      "target": "docs/tutorial-basics/markdown-features.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/intro.mdx",
-      "target": "docs/tutorial-basics/markdown-features.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/intro.mdx",
-      "target": "docs/tutorial-basics/markdown-features.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/intro.mdx",
-      "target": "docs/tutorial-basics/markdown-features.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/tutorial-extras/translate-your-site.mdx",
-      "target": "docs/tutorial-extras/manage-docs-versions.mdx",
-      "type": "parent-child",
-      "strength": 0.8
-    },
-    {
-      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "source": "docs/tutorial-basics/tutorial-basics.mdx",
       "target": "docs/tutorial-basics/deploy-your-site.mdx",
       "type": "parent-child",
       "strength": 0.8
     },
     {
-      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "source": "docs/tutorial-basics/tutorial-basics.mdx",
       "target": "docs/tutorial-basics/create-a-page.mdx",
       "type": "parent-child",
       "strength": 0.8
     },
     {
-      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "source": "docs/tutorial-basics/tutorial-basics.mdx",
       "target": "docs/tutorial-basics/create-a-document.mdx",
       "type": "parent-child",
       "strength": 0.8
     },
     {
-      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "source": "docs/tutorial-basics/tutorial-basics.mdx",
       "target": "docs/tutorial-basics/create-a-blog-post.mdx",
       "type": "parent-child",
       "strength": 0.8
     },
     {
-      "source": "docs/tutorial-basics/markdown-features.mdx",
+      "source": "docs/tutorial-basics/tutorial-basics.mdx",
       "target": "docs/tutorial-basics/congratulations.mdx",
       "type": "parent-child",
       "strength": 0.8
+    },
+    {
+      "source": "docs/Trading/Trading.mdx",
+      "target": "docs/Trading/Trade Execution/Trade Execution.mdx",
+      "type": "parent-child",
+      "strength": 0.6
+    },
+    {
+      "source": "docs/Trading/Trading.mdx",
+      "target": "docs/Trading/Investment Ops/Investment Ops.mdx",
+      "type": "parent-child",
+      "strength": 0.6
+    },
+    {
+      "source": "docs/Trading/Trading.mdx",
+      "target": "docs/Trading/ETFs/ETFs.mdx",
+      "type": "parent-child",
+      "strength": 0.6
+    },
+    {
+      "source": "docs/Portfolio Management/Portfolio Management.mdx",
+      "target": "docs/Portfolio Management/Portfolio Strategy/Portfolio Strategy.mdx",
+      "type": "parent-child",
+      "strength": 0.6
+    },
+    {
+      "source": "docs/Portfolio Management/Portfolio Management.mdx",
+      "target": "docs/Portfolio Management/Portfolio Construction/Portfolio Construction.mdx",
+      "type": "parent-child",
+      "strength": 0.6
+    },
+    {
+      "source": "docs/Portfolio Management/Portfolio Management.mdx",
+      "target": "docs/Portfolio Management/Portfolio Assessment/Portfolio Assessment.mdx",
+      "type": "parent-child",
+      "strength": 0.6
+    },
+    {
+      "source": "docs/Insights/Insights.mdx",
+      "target": "docs/Insights/Process Results/Process Results.mdx",
+      "type": "parent-child",
+      "strength": 0.6
+    },
+    {
+      "source": "docs/Insights/Insights.mdx",
+      "target": "docs/Insights/Generate Signals/Generate Signals.mdx",
+      "type": "parent-child",
+      "strength": 0.6
     },
     {
       "source": "docs/tutorial-basics/markdown-features.mdx",
@@ -174,21 +255,39 @@
       "strength": 0.5
     },
     {
-      "source": "docs/tutorial-basics/congratulations.mdx",
-      "target": "docs/tutorial-extras/manage-docs-versions.mdx",
+      "source": "docs/Trading/Trading.mdx",
+      "target": "docs/Insights/Insights.mdx",
       "type": "reference",
       "strength": 0.5
     },
     {
-      "source": "docs/tutorial-basics/congratulations.mdx",
-      "target": "docs/tutorial-extras/translate-your-site.mdx",
+      "source": "docs/Portfolio Management/Portfolio Management.mdx",
+      "target": "docs/Trading/Trading.mdx",
+      "type": "reference",
+      "strength": 0.5
+    },
+    {
+      "source": "docs/Insights/Insights.mdx",
+      "target": "docs/Portfolio Management/Portfolio Management.mdx",
+      "type": "reference",
+      "strength": 0.5
+    },
+    {
+      "source": "docs/Portfolio Management/Portfolio Strategy/Portfolio Strategy.mdx",
+      "target": "docs/Insights/Insights.mdx",
+      "type": "reference",
+      "strength": 0.5
+    },
+    {
+      "source": "docs/Portfolio Management/Portfolio Construction/Portfolio Construction.mdx",
+      "target": "docs/Trading/Trading.mdx",
       "type": "reference",
       "strength": 0.5
     }
   ],
   "metadata": {
-    "generatedAt": "2025-07-07T11:20:32.794Z",
-    "totalNodes": 9,
-    "totalLinks": 17
+    "generatedAt": "2025-07-07T15:58:35.739Z",
+    "totalNodes": 18,
+    "totalLinks": 20
   }
 }

@@ -9,13 +9,10 @@ import { NetworkGraphLoader } from '../components/NetworkGraph';
 
 ## Features
 
-- **Interactive Nodes**: Click on any node to navigate to that page
+- **Interactive Nodes**: Double Click on any node to navigate to that page
+  - Single Click to focus on that node and its related areas
 - **Drag and Drop**: Drag nodes to explore the network structure
 - **Zoom and Pan**: Use mouse wheel to zoom and drag to pan around the graph
-- **Color Coding**:
-  - 🔵 Blue nodes represent documentation pages
-  - 🟣 Purple nodes represent blog posts
-  - 🟢 Green nodes represent standalone pages
 - **Link Types**:
   - Solid lines show parent-child relationships (directory structure)
   - Dashed lines show reference relationships (markdown links between pages)
@@ -25,15 +22,6 @@ import { NetworkGraphLoader } from '../components/NetworkGraph';
 <NetworkGraphLoader width={900} height={700} />
 
 ## Graph Statistics
-
-The network graph above is automatically generated during the build process by scanning all markdown files in your Docusaurus site. The visualization includes:
-
-- **Docs**: All files in the `docs/` directory
-- **Blog**: All files in the `blog/` directory
-- **Pages**: All markdown files in the `src/pages/` directory
-
-The graph data is saved as `total-graph.json` and updated every time you build your site.
-
 ## How It Works
 
 The network graph plugin:
@@ -46,3 +34,5 @@ The network graph plugin:
 6. **Provides** click navigation and drag-and-drop interaction
 
 This creates a visual map of your site's content structure and helps users understand how pages relate to each other.
+
+The graph data is saved as `total-graph.json` and updated every time you build your site.

@@ -2,7 +2,7 @@ import React from 'react';
 import TOC from '@theme-original/TOC';
 import type TOCType from '@theme/TOC';
 import type {WrapperProps} from '@docusaurus/types';
-import { NetworkGraphEmbed } from '../../components/NetworkGraphEmbed/NetworkGraphEmbed';
+import { NetworkGraphEmbed } from '../../components/NetworkGraphEmbed';
 
 type Props = WrapperProps<typeof TOCType>;
 

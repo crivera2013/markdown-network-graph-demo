@@ -17,6 +17,7 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<NetworkNode | null>(null);
+  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!svgRef.current || !data.nodes.length) return;
@@ -36,21 +37,49 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
 
     svg.call(zoom);
 
-    // Create simulation
+    // Identify main category nodes
+    const isMainCategoryNode = (node: NetworkNode): boolean => {
+      const title = node.title.toLowerCase();
+      return title === 'trading' || title === 'insights' || title === 'portfolio management';
+    };
+
+    // Get node size based on whether it's a main category
+    const getNodeSize = (node: NetworkNode): number => {
+      return isMainCategoryNode(node) ? 15 : 8;
+    };
+
+    // Create simulation with fixed positioning for main category nodes
     const simulation = d3.forceSimulation(data.nodes)
       .force('link', d3.forceLink(data.links)
         .id((d: any) => d.id)
         .distance(d => d.type === 'parent-child' ? 50 : 100)
         .strength(d => d.strength || 0.5)
       )
-      .force('charge', d3.forceManyBody().strength(-300))
+      .force('charge', d3.forceManyBody().strength((d: any) => isMainCategoryNode(d) ? -800 : -300))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(30));
+      .force('collision', d3.forceCollide().radius((d: any) => getNodeSize(d) + 20));
 
-    // Create node color scale based on type
-    const colorScale = d3.scaleOrdinal<string>()
-      .domain(['doc', 'blog', 'page'])
-      .range(['#2563eb', '#7c3aed', '#059669']);
+    // Add fixed positioning force for main category nodes
+    const mainCategoryNodes = data.nodes.filter(isMainCategoryNode);
+    if (mainCategoryNodes.length > 0) {
+      simulation.force('mainCategories', d3.forceRadial(150, width / 2, height / 2)
+        .strength((d: any) => isMainCategoryNode(d) ? 0.8 : 0));
+    }
+
+    // Create node color based on folder structure
+    const getNodeColor = (node: NetworkNode): string => {
+      const path = node.id.toLowerCase();
+      
+      if (path.includes('/trading/')) {
+        return '#22c55e'; // Green for Trading subfolder
+      } else if (path.includes('/portfolio management/') || path.includes('/portfolio-management/')) {
+        return '#8b5cf6'; // Purple for Portfolio Management subfolder
+      } else if (path.includes('/insights/')) {
+        return '#f97316'; // Orange for Insights subfolder
+      } else {
+        return '#000000'; // Black for everything else
+      }
+    };
 
     // Create links
     const link = container.append('g')
@@ -62,6 +91,42 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
       .attr('stroke', d => d.type === 'parent-child' ? '#94a3b8' : '#e2e8f0')
       .attr('stroke-width', d => d.type === 'parent-child' ? 2 : 1)
       .attr('stroke-dasharray', d => d.type === 'reference' ? '3,3' : null);
+
+    // Function to handle single click: center node and highlight connections
+    const handleSingleClick = (clickedNode: NetworkNode, nodeSelection: any, linkSelection: any, sim: any) => {
+      setSelectedNode(clickedNode);
+      
+      // Find all connected nodes
+      const connectedNodeIds = new Set<string>([clickedNode.id]);
+      data.links.forEach(link => {
+        const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+        const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+        
+        if (sourceId === clickedNode.id) {
+          connectedNodeIds.add(targetId);
+        }
+        if (targetId === clickedNode.id) {
+          connectedNodeIds.add(sourceId);
+        }
+      });
+
+      // Center the clicked node
+      sim.force('center', d3.forceCenter(clickedNode.x || width / 2, clickedNode.y || height / 2));
+      sim.alpha(0.3).restart();
+
+      // Highlight connected nodes and grey out others
+      nodeSelection
+        .style('opacity', (d: any) => connectedNodeIds.has(d.id) ? 1 : 0.3)
+        .attr('stroke-width', (d: any) => d.id === clickedNode.id ? 4 : 2);
+
+      // Highlight connected links and grey out others
+      linkSelection
+        .style('opacity', (d: any) => {
+          const sourceId = typeof d.source === 'string' ? d.source : d.source.id;
+          const targetId = typeof d.target === 'string' ? d.target : d.target.id;
+          return (sourceId === clickedNode.id || targetId === clickedNode.id) ? 1 : 0.2;
+        });
+    };
 
     // Create nodes
     const node = container.append('g')
@@ -90,17 +155,42 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
 
     // Add circles to nodes
     node.append('circle')
-      .attr('r', 8)
-      .attr('fill', d => colorScale(d.type))
+      .attr('r', d => getNodeSize(d))
+      .attr('fill', d => getNodeColor(d))
       .attr('stroke', '#ffffff')
       .attr('stroke-width', 2)
       .style('cursor', 'pointer')
       .on('click', (event, d) => {
-        setSelectedNode(d);
+        event.preventDefault();
+        
+        // Clear any existing timeout
+        if (clickTimeout) {
+          clearTimeout(clickTimeout);
+          setClickTimeout(null);
+        }
+        
+        // Set a timeout for single click
+        const timeout = setTimeout(() => {
+          // Single click: center node and highlight connections
+          handleSingleClick(d, node, link, simulation);
+          setClickTimeout(null);
+        }, 250);
+        
+        setClickTimeout(timeout);
+      })
+      .on('dblclick', (event, d) => {
+        event.preventDefault();
+        
+        // Clear the single click timeout
+        if (clickTimeout) {
+          clearTimeout(clickTimeout);
+          setClickTimeout(null);
+        }
+        
+        // Double click: navigate to page
         if (onNodeClick) {
           onNodeClick(d);
         } else {
-          // Default behavior: navigate to the page
           window.location.href = d.path;
         }
       })
@@ -136,9 +226,10 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
           .duration(200)
           .style('opacity', d => connectedNodeIds.has(d.id) ? 1 : 0.3)
           .attr('r', d => {
-            if (d.id === hoveredNode.id) return 12; // Enlarge hovered node
-            if (connectedNodeIds.has(d.id)) return 9; // Slightly enlarge connected nodes
-            return 8; // Keep others normal size
+            const baseSize = getNodeSize(d);
+            if (d.id === hoveredNode.id) return baseSize + 4; // Enlarge hovered node
+            if (connectedNodeIds.has(d.id)) return baseSize + 1; // Slightly enlarge connected nodes
+            return baseSize; // Keep others normal size
           })
           .attr('stroke-width', d => connectedNodeIds.has(d.id) ? 3 : 2);
 
@@ -176,7 +267,7 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
         node.transition()
           .duration(200)
           .style('opacity', 1)
-          .attr('r', 8)
+          .attr('r', d => getNodeSize(d))
           .attr('stroke-width', 2);
 
         // Reset all links to normal state
@@ -227,9 +318,32 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
         .attr('transform', d => `translate(${d.x || 0},${d.y || 0})`);
     });
 
+    // Add background click to reset highlighting
+    svg.on('click', (event) => {
+      // Only reset if clicking on the background (not on a node)
+      if (event.target === svg.node()) {
+        setSelectedNode(null);
+        
+        // Reset all nodes and links to normal state
+        node
+          .style('opacity', 1)
+          .attr('stroke-width', 2);
+        
+        link
+          .style('opacity', 1);
+        
+        // Reset center force
+        simulation.force('center', d3.forceCenter(width / 2, height / 2));
+        simulation.alpha(0.1).restart();
+      }
+    });
+
     // Cleanup tooltip on component unmount
     return () => {
       d3.select('.network-graph-tooltip').remove();
+      if (clickTimeout) {
+        clearTimeout(clickTimeout);
+      }
     };
   }, [data, width, height, onNodeClick]);
 

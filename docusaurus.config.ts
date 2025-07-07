@@ -62,6 +62,7 @@ const config: Config = {
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
         },
+
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -84,6 +85,11 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    // Table of Contents configuration
+    tableOfContents: {
+      minHeadingLevel: 2,
+      maxHeadingLevel: 3,
+    },
     navbar: {
       title: 'My Site',
       logo: {
@@ -91,14 +97,17 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-        {
+        /*{
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
-        },
-        {to: '/blog', label: 'Blog', position: 'left'},
-        {to: '/network-graph', label: 'Network Graph', position: 'left'},
+          label: 'Home',
+        },*/
+        //{to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/home', label: 'Home', position: 'left'},
+        {to: '/docs/Trading', label: 'Trading', position: 'left'},
+        {to: '/docs/Portfolio Management', label: 'Portfolio Management', position: 'left'},
+        {to: '/docs/Insights', label: 'Insights', position: 'left'},
         {
           href: 'https://github.com/facebook/docusaurus',
           label: 'GitHub',
@@ -113,8 +122,8 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Tutorial',
-              to: '/docs/intro',
+              label: 'Home',
+              to: '/home',
             },
           ],
         },

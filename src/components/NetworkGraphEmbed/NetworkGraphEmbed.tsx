@@ -335,123 +335,7 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
           // Default behavior: navigate to the page
           window.location.href = d.path;
         }
-      })
-      .on('mouseover', function(event, hoveredNode) {
-        // Find all nodes connected to the hovered node
-        const connectedNodeIds = new Set<string>([hoveredNode.id]);
-        
-        filteredData.links.forEach(link => {
-          const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
-          const targetId = typeof link.target === 'string' ? link.target : link.target.id;
-          
-          if (sourceId === hoveredNode.id) {
-            connectedNodeIds.add(targetId);
-          }
-          if (targetId === hoveredNode.id) {
-            connectedNodeIds.add(sourceId);
-          }
-        });
-
-        // Show tooltip if enabled
-        if (showTooltips && tooltip) {
-          tooltip
-            .style('opacity', 1)
-            .html(`
-              <div style="font-weight: bold; margin-bottom: 4px;">${hoveredNode.title}</div>
-              ${hoveredNode.metadata?.description ? `<div style="color: #d1d5db; margin-top: 4px;">${hoveredNode.metadata.description}</div>` : ''}
-              ${hoveredNode.metadata?.tags?.length ? `<div style="color: #d1d5db; margin-top: 4px;">Tags: ${hoveredNode.metadata.tags.join(', ')}</div>` : ''}
-            `)
-            .style('left', (event.pageX + 10) + 'px')
-            .style('top', (event.pageY - 10) + 'px');
-        }
-
-        // Highlight connected nodes and grey out others
-        node.transition()
-          .duration(200)
-          .style('opacity', d => connectedNodeIds.has(d.id) ? 1 : 0.3)
-          .attr('r', d => {
-            if (d.id === hoveredNode.id) return nodeSize * 1.5; // Enlarge hovered node
-            if (connectedNodeIds.has(d.id)) return nodeSize * 1.1; // Slightly enlarge connected nodes
-            return nodeSize; // Keep others normal size
-          })
-          .attr('stroke-width', d => connectedNodeIds.has(d.id) ? 3 : 2);
-
-        // Highlight connected links and grey out others
-        link.transition()
-          .duration(200)
-          .style('opacity', d => {
-            const sourceId = typeof d.source === 'string' ? d.source : d.source.id;
-            const targetId = typeof d.target === 'string' ? d.target : d.target.id;
-            return (sourceId === hoveredNode.id || targetId === hoveredNode.id) ? 1 : 0.2;
-          })
-          .attr('stroke-width', d => {
-            const sourceId = typeof d.source === 'string' ? d.source : d.source.id;
-            const targetId = typeof d.target === 'string' ? d.target : d.target.id;
-            const isConnected = sourceId === hoveredNode.id || targetId === hoveredNode.id;
-            return isConnected ? (d.type === 'parent-child' ? 3.5 : 3) : (d.type === 'parent-child' ? 2.5 : 2);
-          });
-
-        // Highlight connected labels and grey out others if labels are enabled
-        if (showLabels) {
-          node.selectAll('text')
-            .transition()
-            .duration(200)
-            .style('opacity', d => connectedNodeIds.has(d.id) ? 1 : 0.3)
-            .style('font-weight', d => {
-              if (d.id === hoveredNode.id) return '700';
-              if (connectedNodeIds.has(d.id)) return '600';
-              if (isCurrentPage(d)) return '600';
-              return '400';
-            });
-        }
-      })
-      .on('mouseout', function(event, d) {
-        // Hide tooltip if enabled
-        if (showTooltips && tooltip) {
-          tooltip.style('opacity', 0);
-        }
-
-        // Reset all nodes to normal state
-        node.transition()
-          .duration(200)
-          .style('opacity', 1)
-          .attr('r', nodeSize)
-          .attr('stroke-width', d => isCurrentPage(d) ? 3 : 2);
-
-        // Reset all links to normal state
-        link.transition()
-          .duration(200)
-          .style('opacity', d => d.type === 'reference' ? 0.8 : 0.7)
-          .attr('stroke-width', d => d.type === 'parent-child' ? 2.5 : 2);
-
-        // Reset all labels to normal state if labels are enabled
-        if (showLabels) {
-          node.selectAll('text')
-            .transition()
-            .duration(200)
-            .style('opacity', 1)
-            .style('font-weight', d => isCurrentPage(d) ? '600' : '400');
-        }
       });
-
-    // Add labels if enabled
-    if (showLabels) {
-      node.append('text')
-        .text(d => {
-          // Increased character limits for better readability
-          const maxLength = width < 280 ? 18 : 30;
-          return d.title.length > maxLength ? d.title.substring(0, maxLength) + '...' : d.title;
-        })
-        .attr('x', nodeSize + 3)
-        .attr('y', 3)
-        .style('font-size', width < 280 ? '9px' : '10px')
-        .style('font-family', 'system-ui, -apple-system, sans-serif')
-        .style('fill', 'var(--ifm-color-emphasis-800)')
-        .style('pointer-events', 'none')
-        .style('user-select', 'none')
-        .attr('text-anchor', 'start')
-        .style('font-weight', d => isCurrentPage(d) ? '600' : '400');
-    }
 
     // Add tooltip if enabled
     let tooltip: any;
@@ -470,9 +354,24 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
         .style('z-index', '1000')
         .style('box-shadow', '0 4px 6px -1px rgba(0, 0, 0, 0.1)');
 
-      node.on('mouseover', (event, hoveredNode) => {
-        // Show tooltip if enabled
-        if (showTooltips && tooltip) {
+      node
+        .on('mouseover', function(event, hoveredNode) {
+          // Find all nodes connected to the hovered node
+          const connectedNodeIds = new Set<string>([hoveredNode.id]);
+          
+          filteredData.links.forEach(link => {
+            const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+            const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+            
+            if (sourceId === hoveredNode.id) {
+              connectedNodeIds.add(targetId);
+            }
+            if (targetId === hoveredNode.id) {
+              connectedNodeIds.add(sourceId);
+            }
+          });
+
+          // Show tooltip
           tooltip
             .style('opacity', 1)
             .html(`
@@ -482,14 +381,69 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
             `)
             .style('left', (event.pageX + 10) + 'px')
             .style('top', (event.pageY - 10) + 'px');
-        }
-      })
-      .on('mouseout', () => {
-        // Hide tooltip if enabled
-        if (showTooltips && tooltip) {
+
+          // Highlight connected nodes and grey out others
+          node.transition()
+            .duration(200)
+            .style('opacity', d => connectedNodeIds.has(d.id) ? 1 : 0.3);
+
+          // Highlight connected links and grey out others
+          link.transition()
+            .duration(200)
+            .style('opacity', d => {
+              const sourceId = typeof d.source === 'string' ? d.source : d.source.id;
+              const targetId = typeof d.target === 'string' ? d.target : d.target.id;
+              return (sourceId === hoveredNode.id || targetId === hoveredNode.id) ? 1 : 0.2;
+            });
+
+          // Highlight connected labels and grey out others if labels are enabled
+          if (showLabels) {
+            node.selectAll('text')
+              .transition()
+              .duration(200)
+              .style('opacity', (d: any) => connectedNodeIds.has(d.id) ? 1 : 0.3);
+          }
+        })
+        .on('mouseout', function(event, d) {
+          // Hide tooltip
           tooltip.style('opacity', 0);
-        }
-      });
+
+          // Reset all nodes to normal state
+          node.transition()
+            .duration(200)
+            .style('opacity', 1);
+
+          // Reset all links to normal state
+          link.transition()
+            .duration(200)
+            .style('opacity', d => d.type === 'reference' ? 0.8 : 0.7);
+
+          // Reset all labels to normal state if labels are enabled
+          if (showLabels) {
+            node.selectAll('text')
+              .transition()
+              .duration(200)
+              .style('opacity', 1);
+          }
+        });
+    }
+
+    // Add labels if enabled
+    if (showLabels) {
+      node.append('text')
+        .text(d => {
+          const maxLength = width < 280 ? 18 : 30;
+          return d.title.length > maxLength ? d.title.substring(0, maxLength) + '...' : d.title;
+        })
+        .attr('x', nodeSize + 3)
+        .attr('y', 3)
+        .style('font-size', width < 280 ? '9px' : '10px')
+        .style('font-family', 'system-ui, -apple-system, sans-serif')
+        .style('fill', 'var(--ifm-color-emphasis-800)')
+        .style('pointer-events', 'none')
+        .style('user-select', 'none')
+        .attr('text-anchor', 'start')
+        .style('font-weight', d => isCurrentPage(d) ? '600' : '400');
     }
 
     // Update positions on simulation tick
