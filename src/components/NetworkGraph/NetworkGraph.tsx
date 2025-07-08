@@ -17,7 +17,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<NetworkNode | null>(null);
-  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [mouseDownTimeout, setMouseDownTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isHolding, setIsHolding] = useState(false);
 
   useEffect(() => {
     if (!svgRef.current || !data.nodes.length) return;
@@ -92,8 +93,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
       .attr('stroke-width', d => d.type === 'parent-child' ? 2 : 1)
       .attr('stroke-dasharray', d => d.type === 'reference' ? '3,3' : null);
 
-    // Function to handle single click: center node and highlight connections
-    const handleSingleClick = (clickedNode: NetworkNode, nodeSelection: any, linkSelection: any, sim: any) => {
+    // Function to handle highlighting node and connections
+    const handleHighlightNode = (clickedNode: NetworkNode, nodeSelection: any, linkSelection: any) => {
       setSelectedNode(clickedNode);
       
       // Find all connected nodes
@@ -110,10 +111,6 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
         }
       });
 
-      // Center the clicked node
-      sim.force('center', d3.forceCenter(clickedNode.x || width / 2, clickedNode.y || height / 2));
-      sim.alpha(0.3).restart();
-
       // Highlight connected nodes and grey out others
       nodeSelection
         .style('opacity', (d: any) => connectedNodeIds.has(d.id) ? 1 : 0.3)
@@ -126,6 +123,19 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
           const targetId = typeof d.target === 'string' ? d.target : d.target.id;
           return (sourceId === clickedNode.id || targetId === clickedNode.id) ? 1 : 0.2;
         });
+    };
+
+    // Function to reset highlighting
+    const resetHighlighting = (nodeSelection: any, linkSelection: any) => {
+      setSelectedNode(null);
+      setIsHolding(false);
+      
+      nodeSelection
+        .style('opacity', 1)
+        .attr('stroke-width', 2);
+      
+      linkSelection
+        .style('opacity', 1);
     };
 
     // Create nodes
@@ -160,38 +170,75 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
       .attr('stroke', '#ffffff')
       .attr('stroke-width', 2)
       .style('cursor', 'pointer')
+      .on('mousedown', (event, d) => {
+        event.preventDefault();
+        
+        console.log('Mouse down on:', d.title);
+        
+        // Reset holding state
+        setIsHolding(false);
+        
+        // Start timeout for click-and-hold
+        const timeout = setTimeout(() => {
+          console.log('Hold timeout triggered for:', d.title);
+          setIsHolding(true);
+          handleHighlightNode(d, node, link);
+        }, 300); // 300ms for hold detection
+        
+        setMouseDownTimeout(timeout);
+      })
+      .on('mouseup', (event, d) => {
+        event.preventDefault();
+        
+        console.log('Mouse up on:', d.title, 'Holding state:', isHolding);
+        
+        // Clear the hold timeout
+        if (mouseDownTimeout) {
+          clearTimeout(mouseDownTimeout);
+          setMouseDownTimeout(null);
+        }
+        
+        // If not holding, navigate immediately (single click)
+        if (!isHolding) {
+          console.log('Quick click detected, navigating to:', d.path);
+          if (onNodeClick) {
+            onNodeClick(d);
+          } else {
+            window.location.href = d.path;
+          }
+        } else {
+          console.log('Hold detected, not navigating');
+        }
+        
+        // Reset holding state after processing
+        setIsHolding(false);
+      })
+      .on('mouseleave', (event, d) => {
+        // Cancel hold if mouse leaves the node
+        if (mouseDownTimeout) {
+          clearTimeout(mouseDownTimeout);
+          setMouseDownTimeout(null);
+        }
+        // Reset holding state
+        setIsHolding(false);
+      })
       .on('click', (event, d) => {
         event.preventDefault();
+        event.stopPropagation();
         
-        // Clear any existing timeout
-        if (clickTimeout) {
-          clearTimeout(clickTimeout);
-          setClickTimeout(null);
-        }
+        console.log('Node clicked:', d.title, 'Path:', d.path, 'Holding:', isHolding);
         
-        // Set a timeout for single click
-        const timeout = setTimeout(() => {
-          // Single click: center node and highlight connections
-          handleSingleClick(d, node, link, simulation);
-          setClickTimeout(null);
-        }, 250);
-        
-        setClickTimeout(timeout);
-      })
-      .on('dblclick', (event, d) => {
-        event.preventDefault();
-        
-        // Clear the single click timeout
-        if (clickTimeout) {
-          clearTimeout(clickTimeout);
-          setClickTimeout(null);
-        }
-        
-        // Double click: navigate to page
-        if (onNodeClick) {
-          onNodeClick(d);
+        // Simple fallback click handler
+        if (!isHolding) {
+          if (onNodeClick) {
+            console.log('Using onNodeClick callback');
+            onNodeClick(d);
+          } else {
+            console.log('Navigating to:', d.path);
+            window.location.href = d.path;
+          }
         } else {
-          window.location.href = d.path;
+          console.log('Click ignored because holding state is true');
         }
       })
       .on('mouseover', function(event, hoveredNode) {
@@ -323,15 +370,7 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
     svg.on('click', (event) => {
       // Only reset if clicking on the background (not on a node)
       if (event.target === svg.node()) {
-        setSelectedNode(null);
-        
-        // Reset all nodes and links to normal state
-        node
-          .style('opacity', 1)
-          .attr('stroke-width', 2);
-        
-        link
-          .style('opacity', 1);
+        resetHighlighting(node, link);
         
         // Reset center force
         simulation.force('center', d3.forceCenter(width / 2, height / 2));
@@ -342,8 +381,8 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
     // Cleanup tooltip on component unmount
     return () => {
       d3.select('.network-graph-tooltip').remove();
-      if (clickTimeout) {
-        clearTimeout(clickTimeout);
+      if (mouseDownTimeout) {
+        clearTimeout(mouseDownTimeout);
       }
     };
   }, [data, width, height, onNodeClick]);
