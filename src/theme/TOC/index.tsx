@@ -15,7 +15,7 @@ export default function TOCWrapper(props: Props): React.ReactElement {
           🔗 Page Network
         </h4>
         <NetworkGraphEmbed
-          width={240}
+          width={248}
           height={200}
           nodeSize={3.5}
           linkDistance={60}

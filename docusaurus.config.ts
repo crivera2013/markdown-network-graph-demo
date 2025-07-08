@@ -85,10 +85,10 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
-    // Table of Contents configuration
+    // Table of Contents configuration - set to minimum allowed values
     tableOfContents: {
       minHeadingLevel: 2,
-      maxHeadingLevel: 3,
+      maxHeadingLevel: 6,
     },
     navbar: {
       title: 'My Site',

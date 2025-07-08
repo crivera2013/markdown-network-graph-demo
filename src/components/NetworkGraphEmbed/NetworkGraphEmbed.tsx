@@ -55,9 +55,9 @@ interface NetworkGraphEmbedProps {
 export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
   width = 800,
   height = 600,
-  nodeSize = 8,
-  linkDistance = 80,
-  chargeStrength = -300,
+  nodeSize = 22,
+  linkDistance = 120,
+  chargeStrength = -500,
   showLabels = true,
   showTooltips = true,
   showStats = true,
@@ -71,16 +71,35 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
   const [selectedNode, setSelectedNode] = useState<NetworkNode | null>(null);
   const location = useLocation();
 
-  // Function to filter data to show only current page and directly connected nodes
+  // Function to filter data to show current page and all directly connected nodes (inbound + outbound + parent-child)
   const filterDataForCurrentPage = (fullData: NetworkGraphData): NetworkGraphData => {
     const currentPath = location.pathname;
 
     // Find the current page node
-    const currentNode = fullData.nodes.find(node =>
-      node.path === currentPath ||
-      node.path === currentPath.replace(/\/$/, '') ||
-      currentPath.includes(node.path)
-    );
+    const currentNode = fullData.nodes.find(node => {
+      // Normalize paths by removing trailing slashes
+      const normalizedCurrentPath = currentPath.replace(/\/$/, '');
+      const normalizedNodePath = node.path.replace(/\/$/, '');
+      
+      // Try exact match first
+      if (normalizedNodePath === normalizedCurrentPath) {
+        return true;
+      }
+      
+      // Try URL-decoded comparison (handle spaces in paths)
+      const decodedPath = decodeURIComponent(normalizedCurrentPath);
+      if (normalizedNodePath === decodedPath) {
+        return true;
+      }
+      
+      // Try URL-encoded comparison (encode node path)
+      const encodedNodePath = encodeURI(normalizedNodePath);
+      if (encodedNodePath === normalizedCurrentPath) {
+        return true;
+      }
+      
+      return false;
+    });
 
     if (!currentNode) {
       // If current page not found, return empty data
@@ -95,28 +114,33 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
       };
     }
 
-    // Find all nodes that have direct links to/from the current node
+    // Find all nodes connected to the current page (outgoing + inbound + parent-child relationships)
     const connectedNodeIds = new Set<string>([currentNode.id]);
 
     fullData.links.forEach(link => {
       const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
       const targetId = typeof link.target === 'string' ? link.target : link.target.id;
 
+      // Add nodes that the current page links TO (outgoing links)
       if (sourceId === currentNode.id) {
         connectedNodeIds.add(targetId);
       }
+      
+      // Add nodes that link TO the current page (inbound links)
       if (targetId === currentNode.id) {
         connectedNodeIds.add(sourceId);
       }
     });
 
-    // Filter nodes to include only current node and directly connected nodes
+    // Filter nodes to include only current node and nodes it links to
     const filteredNodes = fullData.nodes.filter(node => connectedNodeIds.has(node.id));
 
-    // Filter links to include only links between the filtered nodes
+    // Filter links to include all relevant connections to/from the current node
     const filteredLinks = fullData.links.filter(link => {
       const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
       const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+      
+      // Include any link where both source and target are in our connected nodes set
       return connectedNodeIds.has(sourceId) && connectedNodeIds.has(targetId);
     });
 
@@ -219,7 +243,7 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
       )
       .force('charge', d3.forceManyBody().strength(chargeStrength))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(nodeSize + 2));
+      .force('collision', d3.forceCollide().radius(nodeSize + 6));
 
     // Create node color scale
     const colorScale = d3.scaleOrdinal<string>()
@@ -228,10 +252,30 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
 
     // Highlight current page node
     const currentPath = location.pathname;
-    const isCurrentPage = (node: NetworkNode) =>
-      node.path === currentPath ||
-      node.path === currentPath.replace(/\/$/, '') ||
-      currentPath.includes(node.path);
+    const isCurrentPage = (node: NetworkNode) => {
+      // Normalize paths by removing trailing slashes
+      const normalizedCurrentPath = currentPath.replace(/\/$/, '');
+      const normalizedNodePath = node.path.replace(/\/$/, '');
+      
+      // Try exact match first
+      if (normalizedNodePath === normalizedCurrentPath) {
+        return true;
+      }
+      
+      // Try URL-decoded comparison (handle spaces in paths)
+      const decodedPath = decodeURIComponent(normalizedCurrentPath);
+      if (normalizedNodePath === decodedPath) {
+        return true;
+      }
+      
+      // Try URL-encoded comparison (encode node path)
+      const encodedNodePath = encodeURI(normalizedNodePath);
+      if (encodedNodePath === normalizedCurrentPath) {
+        return true;
+      }
+      
+      return false;
+    };
 
     // Create links
     const link = container.append('g')
@@ -265,7 +309,7 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
           return '#6b7280';
         }
       })
-      .attr('stroke-width', d => d.type === 'parent-child' ? 2.5 : 2)
+      .attr('stroke-width', d => d.type === 'parent-child' ? 3 : 2.5)
       .attr('stroke-dasharray', d => d.type === 'reference' ? '6,3' : null)
       .attr('opacity', d => d.type === 'reference' ? 0.8 : 0.7);
 
@@ -311,18 +355,28 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
       });
     };
 
+    // Helper function to get node color based on folder
+    const getNodeColor = (node: NetworkNode): string => {
+      if (isCurrentPage(node)) {
+        return '#ef4444'; // Red for current page
+      }
+      
+      // Check folder-based coloring
+      if (node.path.includes('/Trading')) {
+        return '#22c55e'; // Green for Trading folder
+      } else if (node.path.includes('/Portfolio Management')) {
+        return '#8b5cf6'; // Purple for Portfolio Management folder
+      } else if (node.path.includes('/Insights')) {
+        return '#f97316'; // Orange for Insights folder
+      } else {
+        return '#1f2937'; // Black for other folders
+      }
+    };
+
     // Add circles to nodes
     node.append('circle')
-      .attr('r', d => isCurrentPage(d) ? nodeSize * 1.3 : nodeSize)
-      .attr('fill', d => {
-        if (isCurrentPage(d)) {
-          return '#ef4444'; // Red for current page
-        } else if (isConnectedByReference(d)) {
-          return '#8b5cf6'; // Purple for nodes connected by reference links
-        } else {
-          return colorScale(d.type); // Default colors based on type
-        }
-      })
+      .attr('r', d => isCurrentPage(d) ? nodeSize * 1.4 : nodeSize)
+      .attr('fill', d => getNodeColor(d))
       .attr('stroke', d => isCurrentPage(d) ? '#dc2626' : '#ffffff')
       .attr('stroke-width', d => isCurrentPage(d) ? 3 : 2)
       .style('filter', d => isCurrentPage(d) ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' : null)
@@ -347,7 +401,7 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
         .style('color', 'white')
         .style('padding', '8px 12px')
         .style('border-radius', '6px')
-        .style('font-size', '12px')
+        .style('font-size', '13px')
         .style('font-family', 'system-ui, -apple-system, sans-serif')
         .style('pointer-events', 'none')
         .style('opacity', 0)
@@ -435,9 +489,9 @@ export const NetworkGraphEmbed: React.FC<NetworkGraphEmbedProps> = ({
           const maxLength = width < 280 ? 18 : 30;
           return d.title.length > maxLength ? d.title.substring(0, maxLength) + '...' : d.title;
         })
-        .attr('x', nodeSize + 3)
-        .attr('y', 3)
-        .style('font-size', width < 280 ? '9px' : '10px')
+        .attr('x', nodeSize + 6)
+        .attr('y', 5)
+        .style('font-size', width < 280 ? '11px' : '13px')
         .style('font-family', 'system-ui, -apple-system, sans-serif')
         .style('fill', 'var(--ifm-color-emphasis-800)')
         .style('pointer-events', 'none')

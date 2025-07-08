@@ -287,9 +287,10 @@ export const NetworkGraph: React.FC<NetworkGraphProps> = ({
     // Add labels to nodes
     node.append('text')
       .text(d => d.title.length > 20 ? d.title.substring(0, 20) + '...' : d.title)
-      .attr('x', 12)
+      .attr('x', d => getNodeSize(d) + 3)
       .attr('y', 4)
-      .style('font-size', '12px')
+      .style('font-size', d => isMainCategoryNode(d) ? '16px' : '12px')
+      .style('font-weight', d => isMainCategoryNode(d) ? '600' : 'normal')
       .style('font-family', 'system-ui, -apple-system, sans-serif')
       .style('fill', '#374151')
       .style('pointer-events', 'none');

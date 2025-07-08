@@ -37,6 +37,8 @@
   border-radius: 0.5rem;
   background-color: var(--ifm-background-surface-color);
   box-shadow: var(--ifm-global-shadow-lw);
+  width: 280px;
+  box-sizing: border-box;
 }
 
 .network-graph-sidebar h4 {
